@@ -1,0 +1,5 @@
+export DIB_RELEASE="15.4"
+export ID_IMAGE="opensuse-15.4"
+export DIB_CLOUD_INIT_DATASOURCES=${DIB_CLOUD_INIT_DATASOURCES:-"Ec2, ConfigDrive, OpenStack"}
+export DIB_CLOUD_INIT_ETC_HOSTS=${DIB_CLOUD_INIT_ETC_HOSTS:-"true"}
+export ARCH=${ARCH:-"amd64"}

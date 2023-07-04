@@ -1,0 +1,8 @@
+vm
+block-device-efi
+cloud-init-datasources 
+custom-ubuntu
+config-grub
+debian-complex-password
+custom-packages
+ubuntu-netplan

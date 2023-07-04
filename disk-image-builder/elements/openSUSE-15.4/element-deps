@@ -1,0 +1,6 @@
+vm
+block-device-efi
+cloud-init-datasources 
+opensuse
+opensuse-complex-password
+custom-packages

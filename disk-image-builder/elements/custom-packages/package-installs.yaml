@@ -1,0 +1,5 @@
+acpid:
+watchdog:
+  - when: ID_IMAGE != opensuse-15.3
+tuned:
+qemu-guest-agent:

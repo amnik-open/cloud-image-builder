@@ -1,0 +1,94 @@
+variables:
+  OS_IMAGE_NAME:
+    value: "Ubuntu-22.04"
+    description: "This variable specify the image of the pipeline"
+
+stages:
+  - build
+  - staging
+  - test
+  - cleanup
+  - publish
+
+build-os-image:
+  stage: build
+  before_script:
+    - export ELEMENTS_PATH="disk-image-builder/elements/"
+  script:
+    disk-image-create -n $OS_IMAGE_NAME -o /var/os-images/$OS_IMAGE_NAME -t raw
+  tags: 
+    - cloud-image-builder
+  when: manual
+  allow_failure: false
+
+stage-resources:
+  stage: staging
+  variables:
+    auth_url: "$auth_url"
+    region_name: "$region_name"
+    project_name: "$project_name"
+    username: "$username"
+    password: "$password"
+    image_path: "/var/os-images/${OS_IMAGE_NAME}.raw"
+    SSH_PUBLIC_KEY_PATH: "/var/cloud-image-builder/ssh-key/id_rsa.pub"
+    image_name: "$OS_IMAGE_NAME"
+  script:
+    python3 staging/staging.py
+  tags:
+    - cloud-image-builder
+  artifacts:
+    reports:
+      dotenv: stage.env
+    expire_in: 1 day
+
+test-os-image:
+  stage: test
+  variables:
+    GATEWAY_USERNAME: "amir-nikpour"
+    GATEWAY_IP: "94.101.190.34"
+    GATEWAY_PORT: "65422"
+    SSH_PRIVATE_KEY_PATH: "/var/cloud-image-builder/ssh-key/id_rsa"
+    auth_url: "$auth_url"
+    region_name: "$region_name"
+    project_name: "$project_name"
+    username: "$username"
+    password: "$password"
+  script:
+    python3 test/test.py
+  tags:
+    - cloud-image-builder
+  dependencies:
+    - stage-resources
+  allow_failure: true
+
+delete-staged-resources:
+  stage: cleanup
+  variables:
+    auth_url: "$auth_url"
+    region_name: "$region_name"
+    project_name: "$project_name"
+    username: "$username"
+    password: "$password"
+  script:
+    python3 cleanup/cleanup.py
+  tags:
+    - cloud-image-builder
+  dependencies:
+    - stage-resources
+  when: manual
+
+push-to-s3:
+  stage: publish
+  variables:
+    s3_endpoint_url: "$s3_endpoint_url"
+    s3_access_key: "$s3_access_key"
+    s3_secret_key: "$s3_secret_key"
+    bucketname: "$bucketname"
+    image_path: "/var/os-images/${OS_IMAGE_NAME}.raw"
+    dir: "$dir"
+    object_name: "$OS_IMAGE_NAME"
+  script:
+    python3 publish/upload_image_to_s3.py
+  tags:
+    - cloud-image-builder
+  when: manual

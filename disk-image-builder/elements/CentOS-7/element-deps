@@ -1,0 +1,7 @@
+vm
+block-device-efi
+cloud-init-datasources 
+centos
+other-distribution-complex-password
+custom-packages
+disable-selinux

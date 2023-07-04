@@ -1,0 +1,7 @@
+vm
+block-device-efi
+cloud-init-datasources 
+debian
+config-grub
+debian-complex-password
+custom-packages

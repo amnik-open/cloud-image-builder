@@ -1,0 +1,1 @@
+export DIB_BOOTLOADER_DEFAULT_CMDLINE="net.ifnames=0 biosdevname=0"
